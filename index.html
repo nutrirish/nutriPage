@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriRish Wellness Intake</title>
+  <style>
+    :root {
+      --bg: #f7f2ea;
+      --card: rgba(255, 255, 255, 0.76);
+      --text: #1f2623;
+      --muted: #66736c;
+      --accent: #7f9f8b;
+      --accent-dark: #506f60;
+      --line: rgba(31, 38, 35, 0.12);
+      --shadow: 0 30px 80px rgba(54, 67, 58, 0.18);
+      --danger: #9d4b4b;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(127,159,139,0.35), transparent 36%),
+        radial-gradient(circle at bottom right, rgba(219,190,150,0.32), transparent 36%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.055;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .wrap {
+      width: min(980px, 92vw);
+      margin: 0 auto;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 32px 0;
+    }
+
+    .panel {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: blur(26px);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 5vw, 56px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 999px;
+      background: rgba(127,159,139,0.18);
+      filter: blur(20px);
+      right: -110px;
+      top: -110px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #1f2623, #7f9f8b);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .screen { display: none; position: relative; z-index: 2; }
+    .screen.active { display: block; animation: enter 540ms cubic-bezier(.2,.8,.2,1); }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(18px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    h1 {
+      font-size: clamp(38px, 7vw, 76px);
+      line-height: 0.93;
+      letter-spacing: -3px;
+      margin: 0 0 22px;
+      max-width: 820px;
+    }
+
+    h2 {
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1;
+      letter-spacing: -2px;
+      margin: 0 0 16px;
+      max-width: 760px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 0 28px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 22px 0;
+    }
+
+    .field { margin: 18px 0; }
+
+    label {
+      display: block;
+      font-weight: 750;
+      font-size: 15px;
+      margin-bottom: 9px;
+      color: var(--text);
+    }
+
+    .hint {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: -4px;
+      margin-bottom: 9px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.68);
+      border-radius: 18px;
+      padding: 16px 17px;
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+      transition: 220ms ease;
+      font-family: inherit;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(127,159,139,0.82);
+      box-shadow: 0 0 0 5px rgba(127,159,139,0.16);
+      background: rgba(255,255,255,0.92);
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .choice input { display: none; }
+
+    .choice span {
+      display: block;
+      padding: 15px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.62);
+      cursor: pointer;
+      transition: 200ms ease;
+      color: var(--muted);
+      min-height: 54px;
+    }
+
+    .choice input:checked + span {
+      background: rgba(127,159,139,0.18);
+      border-color: rgba(127,159,139,0.85);
+      color: var(--text);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(80, 111, 96, 0.12);
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    input[type="range"] { accent-color: var(--accent-dark); padding: 0; }
+
+    .score {
+      min-width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: #1f2623;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 15px 22px;
+      font-size: 16px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: 220ms ease;
+      font-family: inherit;
+    }
+
+    .primary {
+      background: #1f2623;
+      color: white;
+      box-shadow: 0 18px 45px rgba(31,38,35,0.25);
+    }
+
+    .primary:hover { transform: translateY(-3px); }
+    .primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .ghost {
+      background: rgba(255,255,255,0.62);
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .progress-wrap {
+      margin-bottom: 28px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 9px;
+      background: rgba(31,38,35,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7f9f8b, #1f2623);
+      border-radius: 999px;
+      transition: width 380ms ease;
+    }
+
+    .microcopy {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .error {
+      color: var(--danger);
+      font-size: 14px;
+      margin-top: 14px;
+      display: none;
+    }
+
+    .success {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .success-icon {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 24px;
+      border-radius: 28px;
+      display: grid;
+      place-items: center;
+      background: rgba(127,159,139,0.18);
+      font-size: 36px;
+    }
+
+    @media (max-width: 760px) {
+      .grid, .choice-grid { grid-template-columns: 1fr; }
+      .buttons { flex-direction: column-reverse; align-items: stretch; }
+      button { width: 100%; }
+      h1 { letter-spacing: -2px; }
+      .panel { border-radius: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <main class="wrap">
+    <section class="panel">
+      <div class="brand">
+        <div class="logo">NR</div>
+        <div>
+          <strong>NutriRish</strong><br />
+          <span>Realistic nutrition, habits & wellness</span>
+        </div>
+      </div>
+
+      <form id="wellnessForm" novalidate>
+        <div class="screen active" data-screen="0">
+          <div class="pill">✨ 4-minute personal wellness intake</div>
+          <h1>Let’s understand you before we talk calories.</h1>
+          <p>This is not a judgement form. It is a simple wellness check-in to understand your lifestyle, food patterns, stress, sleep, goals and what kind of support may actually work for you.</p>
+          <button type="button" class="primary" onclick="nextScreen()">Start Experience</button>
+          <div class="microcopy">Be honest. Your answers help create better, more realistic guidance.</div>
+        </div>
+
+        <div class="screen" data-screen="1">
+          <div class="progress-wrap"><div class="progress-meta"><span>Identity</span><span>1 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>First, tell me a little about you.</h2>
+          <p>Basic context helps avoid generic advice.</p>
+
+          <div class="grid">
+            <div class="field">
+              <label for="name">Your name *</label>
+              <input id="name" name="name" type="text" placeholder="e.g. Rish" required />
+            </div>
+            <div class="field">
+              <label for="instagram">Instagram handle</label>
+              <input id="instagram" name="instagram" type="text" placeholder="@yourhandle" />
+            </div>
+            <div class="field">
+              <label for="age">Age *</label>
+              <input id="age" name="age" type="number" placeholder="30" min="13" max="90" required />
+            </div>
+            <div class="field">
+              <label for="gender">Gender identity</label>
+              <select id="gender" name="gender">
+                <option value="">Prefer to choose</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Non-binary</option>
+                <option>Prefer not to say</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="location">City / location *</label>
+              <input id="location" name="location" type="text" placeholder="London" required />
+            </div>
+            <div class="field">
+              <label for="country">Country *</label>
+              <input id="country" name="country" type="text" placeholder="United Kingdom" required />
+            </div>
+            <div class="field">
+              <label for="ethnicity">Ethnicity / cultural background</label>
+              <span class="hint">Optional. Useful for food culture, family meals and lifestyle context.</span>
+              <input id="ethnicity" name="ethnicity" type="text" placeholder="e.g. Indian, British Asian, etc." />
+            </div>
+            <div class="field">
+              <label for="occupation">What do you do most days?</label>
+              <input id="occupation" name="occupation" type="text" placeholder="Office job, student, shift work, parent, business owner..." />
+            </div>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="2">
+          <div class="progress-wrap"><div class="progress-meta"><span>Goal</span><span>2 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>What would you love to improve?</h2>
+          <p>Choose what feels most true right now.</p>
+
+          <div class="field">
+            <label>Main goal *</label>
+            <div class="choice-grid">
+              <label class="choice"><input name="mainGoal" type="radio" value="Fat loss" required /><span>🔥 Fat loss</span></label>
+              <label class="choice"><input name="mainGoal" type="radio" value="Build muscle" /><span>💪 Build muscle</span></label>
+              <label class="choice"><input name="mainGoal" type="radio" value="Better energy" /><span>⚡ Better energy</span></label>
+              <label class="choice"><input name="mainGoal" type="radio" value="Improve digestion" /><span>🌱 Improve digestion</span></label>
+              <label class="choice"><input name="mainGoal" type="radio" value="Healthier relationship with food" /><span>🍽️ Healthier relationship with food</span></label>
+              <label class="choice"><input name="mainGoal" type="radio" value="Overall wellness" /><span>🧭 Overall wellness</span></label>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="timeline">When would you like to feel a clear change?</label>
+              <select id="timeline" name="timeline">
+                <option value="">Select one</option>
+                <option>In the next 4 weeks</option>
+                <option>In 8-12 weeks</option>
+                <option>In 3-6 months</option>
+                <option>I want a long-term lifestyle change</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="importance">How important is this goal right now?</label>
+              <select id="importance" name="importance">
+                <option value="">Select one</option>
+                <option>Nice to have</option>
+                <option>Important</option>
+                <option>Very important</option>
+                <option>I really need change now</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="goalReason">Why does this matter to you personally?</label>
+            <textarea id="goalReason" name="goalReason" placeholder="Confidence, health, clothes fitting better, energy, mood, discipline, family, a recent wake-up call..."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="3">
+          <div class="progress-wrap"><div class="progress-meta"><span>Body context</span><span>3 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>Let’s understand your body, not judge it.</h2>
+          <p>Only share what you are comfortable sharing.</p>
+
+          <div class="grid">
+            <div class="field">
+              <label for="height">Height</label>
+              <input id="height" name="height" type="text" placeholder="e.g. 168 cm or 5'6" />
+            </div>
+            <div class="field">
+              <label for="weight">Current weight</label>
+              <input id="weight" name="weight" type="text" placeholder="e.g. 70 kg" />
+            </div>
+            <div class="field">
+              <label for="weightChange">Weight trend recently</label>
+              <select id="weightChange" name="weightChange">
+                <option value="">Select one</option>
+                <option>Going up</option>
+                <option>Going down</option>
+                <option>Mostly stable</option>
+                <option>Up and down</option>
+                <option>I do not track it</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="medicalContext">Any medical condition or medication?</label>
+              <span class="hint">Optional. Do not share anything you are not comfortable with.</span>
+              <input id="medicalContext" name="medicalContext" type="text" placeholder="e.g. thyroid, PCOS, cholesterol, diabetes, none..." />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>How confident do you currently feel in your body?</label>
+            <div class="slider-row"><input name="bodyConfidence" type="range" min="1" max="10" value="5" oninput="bodyConfidenceValue.textContent=this.value" /><div class="score" id="bodyConfidenceValue">5</div></div>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="4">
+          <div class="progress-wrap"><div class="progress-meta"><span>Nutrition awareness</span><span>4 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>What do you already know about nutrition?</h2>
+          <p>This helps me meet you where you are, not overload you.</p>
+
+          <div class="field">
+            <label>How would you describe your nutrition knowledge? *</label>
+            <div class="choice-grid">
+              <label class="choice"><input name="nutritionKnowledge" type="radio" value="Beginner" required /><span>🌱 Beginner, I need basics</span></label>
+              <label class="choice"><input name="nutritionKnowledge" type="radio" value="Some knowledge" /><span>📚 I know a few things</span></label>
+              <label class="choice"><input name="nutritionKnowledge" type="radio" value="I track calories/macros" /><span>📊 I track calories/macros</span></label>
+              <label class="choice"><input name="nutritionKnowledge" type="radio" value="Confused by too much advice" /><span>🌀 I am confused by too much advice</span></label>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="calorieTracking">Do you track calories?</label>
+              <select id="calorieTracking" name="calorieTracking">
+                <option value="">Select one</option>
+                <option>Yes, daily</option>
+                <option>Sometimes</option>
+                <option>I have tried before</option>
+                <option>No</option>
+                <option>I do not want to track</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="proteinAwareness">Do you know your protein intake?</label>
+              <select id="proteinAwareness" name="proteinAwareness">
+                <option value="">Select one</option>
+                <option>Yes, I track it</option>
+                <option>Roughly</option>
+                <option>Not sure</option>
+                <option>I barely think about protein</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="nutritionBeliefs">What nutrition advice have you believed or followed before?</label>
+            <textarea id="nutritionBeliefs" name="nutritionBeliefs" placeholder="Low carb, fasting, detox, high protein, clean eating, no sugar, calorie deficit, etc."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="5">
+          <div class="progress-wrap"><div class="progress-meta"><span>Food patterns</span><span>5 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>Let’s talk food, without guilt.</h2>
+          <p>Your pattern matters more than one perfect meal.</p>
+
+          <div class="field">
+            <label>Biggest nutrition struggle *</label>
+            <div class="choice-grid">
+              <label class="choice"><input name="nutritionStruggle" type="radio" value="Cravings" required /><span>🍫 Cravings</span></label>
+              <label class="choice"><input name="nutritionStruggle" type="radio" value="Overeating" /><span>🍕 Overeating</span></label>
+              <label class="choice"><input name="nutritionStruggle" type="radio" value="Low protein" /><span>🥚 Low protein</span></label>
+              <label class="choice"><input name="nutritionStruggle" type="radio" value="Weekend inconsistency" /><span>🎉 Weekend inconsistency</span></label>
+              <label class="choice"><input name="nutritionStruggle" type="radio" value="Emotional eating" /><span>🧠 Emotional eating</span></label>
+              <label class="choice"><input name="nutritionStruggle" type="radio" value="No routine" /><span>⏰ No routine</span></label>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="mealsPerDay">Typical meals per day</label>
+              <select id="mealsPerDay" name="mealsPerDay">
+                <option value="">Select one</option>
+                <option>1-2</option>
+                <option>3</option>
+                <option>4+</option>
+                <option>It changes daily</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="eatingOut">How often do you eat out/order food?</label>
+              <select id="eatingOut" name="eatingOut">
+                <option value="">Select one</option>
+                <option>Rarely</option>
+                <option>1-2 times/week</option>
+                <option>3-5 times/week</option>
+                <option>Most days</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="dietType">Food preference</label>
+              <select id="dietType" name="dietType">
+                <option value="">Select one</option>
+                <option>Vegetarian</option>
+                <option>Vegan</option>
+                <option>Eggitarian</option>
+                <option>Non-vegetarian</option>
+                <option>Mostly plant-based</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="allergies">Allergies / foods you avoid</label>
+              <input id="allergies" name="allergies" type="text" placeholder="Dairy, gluten, nuts, eggs, none..." />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="usualDayFood">What does a normal day of eating look like for you?</label>
+            <textarea id="usualDayFood" name="usualDayFood" placeholder="Breakfast, lunch, dinner, snacks, drinks. Rough is fine."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="6">
+          <div class="progress-wrap"><div class="progress-meta"><span>Hunger & emotions</span><span>6 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>How does food feel emotionally?</h2>
+          <p>This is where sustainable coaching becomes personal.</p>
+
+          <div class="grid">
+            <div class="field">
+              <label for="hungerPattern">Hunger pattern</label>
+              <select id="hungerPattern" name="hungerPattern">
+                <option value="">Select one</option>
+                <option>I get very hungry often</option>
+                <option>I forget to eat then overeat</option>
+                <option>My hunger feels normal</option>
+                <option>I eat even when not hungry</option>
+                <option>I am not sure</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cravingTiming">When do cravings usually hit?</label>
+              <select id="cravingTiming" name="cravingTiming">
+                <option value="">Select one</option>
+                <option>Morning</option>
+                <option>Afternoon</option>
+                <option>Evening/night</option>
+                <option>Weekend/social situations</option>
+                <option>Stressful moments</option>
+                <option>Rarely</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>How often do you feel guilt after eating?</label>
+            <div class="choice-grid">
+              <label class="choice"><input name="foodGuilt" type="radio" value="Rarely" /><span>😌 Rarely</span></label>
+              <label class="choice"><input name="foodGuilt" type="radio" value="Sometimes" /><span>🙂 Sometimes</span></label>
+              <label class="choice"><input name="foodGuilt" type="radio" value="Often" /><span>😵 Often</span></label>
+              <label class="choice"><input name="foodGuilt" type="radio" value="I prefer not to answer" /><span>🤍 Prefer not to answer</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="foodRelationship">Complete this sentence: “Food feels like...”</label>
+            <textarea id="foodRelationship" name="foodRelationship" placeholder="Fuel, comfort, stress, confusion, control, joy, guilt, something else..."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="7">
+          <div class="progress-wrap"><div class="progress-meta"><span>Sleep & recovery</span><span>7 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>Your recovery tells a lot.</h2>
+          <p>Sleep, stress and energy shape hunger, cravings and consistency.</p>
+
+          <div class="grid">
+            <div class="field">
+              <label for="sleepHours">Average sleep *</label>
+              <select id="sleepHours" name="sleepHours" required>
+                <option value="">Select one</option>
+                <option>Less than 5 hours</option>
+                <option>5-6 hours</option>
+                <option>6-7 hours</option>
+                <option>7-8 hours</option>
+                <option>More than 8 hours</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="wakeFeeling">When you wake up *</label>
+              <select id="wakeFeeling" name="wakeFeeling" required>
+                <option value="">Select one</option>
+                <option>Fresh and ready</option>
+                <option>Okay, but slow</option>
+                <option>Tired most mornings</option>
+                <option>Exhausted</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Energy through the day</label>
+            <div class="slider-row"><input name="energyScore" type="range" min="1" max="10" value="5" oninput="energyValue.textContent=this.value" /><div class="score" id="energyValue">5</div></div>
+          </div>
+          <div class="field">
+            <label>Stress level right now</label>
+            <div class="slider-row"><input name="stressScore" type="range" min="1" max="10" value="5" oninput="stressValue.textContent=this.value" /><div class="score" id="stressValue">5</div></div>
+          </div>
+
+          <div class="field">
+            <label for="stressSource">What is creating the most stress lately?</label>
+            <textarea id="stressSource" name="stressSource" placeholder="Work, family, health, money, relationships, body image, uncertainty..."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="8">
+          <div class="progress-wrap"><div class="progress-meta"><span>Movement</span><span>8 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>What does movement look like for you?</h2>
+          <p>We are looking for realistic patterns, not athlete-level perfection.</p>
+
+          <div class="grid">
+            <div class="field">
+              <label for="activityLevel">Daily activity</label>
+              <select id="activityLevel" name="activityLevel">
+                <option value="">Select one</option>
+                <option>Mostly sitting</option>
+                <option>Some walking</option>
+                <option>Active most days</option>
+                <option>Very active</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="trainingFrequency">Training frequency</label>
+              <select id="trainingFrequency" name="trainingFrequency">
+                <option value="">Select one</option>
+                <option>0 days/week</option>
+                <option>1-2 days/week</option>
+                <option>3-4 days/week</option>
+                <option>5+ days/week</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="trainingType">Training type</label>
+              <input id="trainingType" name="trainingType" type="text" placeholder="Gym, walking, running, sport, yoga, none..." />
+            </div>
+            <div class="field">
+              <label for="steps">Average daily steps</label>
+              <input id="steps" name="steps" type="text" placeholder="e.g. 8,000 or not sure" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="movementBarrier">What usually stops you from moving more?</label>
+            <textarea id="movementBarrier" name="movementBarrier" placeholder="Time, energy, confidence, pain, motivation, routine, weather..."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="9">
+          <div class="progress-wrap"><div class="progress-meta"><span>Support style</span><span>9 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>What kind of support would actually work for you?</h2>
+          <p>Some people need structure. Some need flexibility. Some need accountability. There is no one-size-fits-all.</p>
+
+          <div class="field">
+            <label>What style would help you most?</label>
+            <div class="choice-grid">
+              <label class="choice"><input name="supportStyle" type="radio" value="Simple habit plan" /><span>🧩 Simple habit plan</span></label>
+              <label class="choice"><input name="supportStyle" type="radio" value="Meal structure" /><span>🍱 Meal structure</span></label>
+              <label class="choice"><input name="supportStyle" type="radio" value="Accountability" /><span>✅ Accountability</span></label>
+              <label class="choice"><input name="supportStyle" type="radio" value="Education" /><span>🧠 Education</span></label>
+              <label class="choice"><input name="supportStyle" type="radio" value="Emotional support" /><span>🤍 Emotional support</span></label>
+              <label class="choice"><input name="supportStyle" type="radio" value="I am not sure" /><span>🧭 I am not sure</span></label>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="coachPreference">How direct should coaching be?</label>
+              <select id="coachPreference" name="coachPreference">
+                <option value="">Select one</option>
+                <option>Gentle and supportive</option>
+                <option>Balanced</option>
+                <option>Direct and structured</option>
+                <option>I need a push</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="budgetIntent">Are you looking for coaching?</label>
+              <select id="budgetIntent" name="budgetIntent">
+                <option value="">Select one</option>
+                <option>Yes, soon</option>
+                <option>Maybe later</option>
+                <option>Just exploring</option>
+                <option>I only want free resources for now</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pastAttempts">What have you tried before, and why did it not fully work?</label>
+            <textarea id="pastAttempts" name="pastAttempts" placeholder="Diets, gym plans, fasting, apps, challenges, personal trainers, self-tracking..."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="button" class="primary" onclick="nextScreen()">Continue</button></div>
+        </div>
+
+        <div class="screen" data-screen="10">
+          <div class="progress-wrap"><div class="progress-meta"><span>Final check-in</span><span>10 / 10</span></div><div class="progress"><div class="bar"></div></div></div>
+          <h2>Last honest check-in.</h2>
+          <p>This answer matters more than any number.</p>
+
+          <div class="field">
+            <label for="mainBlocker">What is the one thing stopping you from feeling your best? *</label>
+            <textarea id="mainBlocker" name="mainBlocker" placeholder="Time, stress, confusion, cravings, discipline, social life, confidence..." required></textarea>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="email">Email, optional</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" />
+            </div>
+            <div class="field">
+              <label for="contactPreference">Preferred follow-up</label>
+              <select id="contactPreference" name="contactPreference">
+                <option value="">Select one</option>
+                <option>Instagram DM</option>
+                <option>Email</option>
+                <option>WhatsApp</option>
+                <option>No follow-up, just submitting</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="finalMessage">Anything else you want me to understand about you?</label>
+            <textarea id="finalMessage" name="finalMessage" placeholder="Your routine, family food, work pressure, health worries, goals, fears, anything personal you want to share..."></textarea>
+          </div>
+
+          <div class="error"></div>
+          <div class="buttons"><button type="button" class="ghost" onclick="prevScreen()">Back</button><button type="submit" class="primary" id="submitBtn">Submit my check-in</button></div>
+          <div class="microcopy">This is not medical advice. For medical conditions, diagnosis, medication or urgent symptoms, please speak to a qualified healthcare professional.</div>
+        </div>
+
+        <div class="screen success" data-screen="11">
+          <div class="success-icon">🌿</div>
+          <h2>Your check-in is complete.</h2>
+          <p>Thank you for being honest with yourself. Your body does not need punishment, it needs support, structure and patience.</p>
+          <button type="button" class="primary" onclick="restartForm()">Start again</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    let currentScreen = 0;
+    const screens = Array.from(document.querySelectorAll(".screen"));
+    const finalQuestionScreen = 10;
+
+    function showScreen(index) {
+      screens.forEach(screen => screen.classList.remove("active"));
+      screens[index].classList.add("active");
+      currentScreen = index;
+      updateProgress();
+      clearError();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function activeScreen() {
+      return screens[currentScreen];
+    }
+
+    function showError(message) {
+      const errorBox = activeScreen().querySelector(".error");
+      if (errorBox) {
+        errorBox.textContent = message;
+        errorBox.style.display = "block";
+      } else {
+        alert(message);
+      }
+    }
+
+    function clearError() {
+      document.querySelectorAll(".error").forEach(box => {
+        box.textContent = "";
+        box.style.display = "none";
+      });
+    }
+
+    function validateCurrentScreen() {
+      clearError();
+      const active = activeScreen();
+      const requiredFields = Array.from(active.querySelectorAll("[required]"));
+      const checkedRadioNames = new Set();
+
+      for (const field of requiredFields) {
+        if (field.type === "radio") {
+          if (checkedRadioNames.has(field.name)) continue;
+          checkedRadioNames.add(field.name);
+          const group = Array.from(active.querySelectorAll(`input[type="radio"][name="${field.name}"]`));
+          const checked = group.some(input => input.checked);
+          if (!checked) {
+            showError("Please choose one option before continuing.");
+            return false;
+          }
+        } else if (!field.value || !field.value.trim()) {
+          field.focus();
+          showError("Please complete the required field before continuing.");
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function nextScreen() {
+      if (currentScreen > 0 && currentScreen <= finalQuestionScreen && !validateCurrentScreen()) return;
+      showScreen(Math.min(currentScreen + 1, screens.length - 1));
+    }
+
+    function prevScreen() {
+      showScreen(Math.max(currentScreen - 1, 0));
+    }
+
+    function updateProgress() {
+      const activeBar = activeScreen().querySelector(".bar");
+      if (!activeBar) return;
+      const percent = Math.min((currentScreen / finalQuestionScreen) * 100, 100);
+      activeBar.style.width = percent + "%";
+    }
+
+    function restartForm() {
+      document.getElementById("wellnessForm").reset();
+      document.getElementById("bodyConfidenceValue").textContent = "5";
+      document.getElementById("energyValue").textContent = "5";
+      document.getElementById("stressValue").textContent = "5";
+      showScreen(0);
+    }
+
+    function formToObject(form) {
+      const formData = new FormData(form);
+      const data = {};
+      for (const [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+      data.submittedAt = new Date().toISOString();
+      data.page = "NutriRish Wellness Intake";
+      data.userAgent = navigator.userAgent;
+      return data;
+    }
+
+    document.getElementById("wellnessForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      if (!validateCurrentScreen()) return;
+
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+
+      const data = formToObject(event.target);
+
+      try {
+        if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) {
+          console.log("Form data ready for Google Sheets:", data);
+          showError("Form is ready, but Google Apps Script URL is missing. Paste your Web App URL in GOOGLE_SCRIPT_URL.");
+          return;
+        }
+
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(data)
+        });
+
+        showScreen(11);
+      } catch (error) {
+        console.error(error);
+        showError("Something went wrong while submitting. Please try again.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit my check-in";
+      }
+    });
+  </script>
+</body>
+</html>

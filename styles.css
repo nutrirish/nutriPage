@@ -2030,11 +2030,15 @@ figcaption {
   }
 
   .scroll-cinema {
-    min-height: 410vh;
+    min-height: 210svh;
+  }
+
+  .hero-cinema {
+    min-height: 190svh;
   }
 
   .second-cinema {
-    min-height: 330vh;
+    min-height: 185svh;
   }
 
   .cinema-main {
@@ -2177,7 +2181,7 @@ figcaption {
     min-width: 3ch;
     font-size: clamp(3.9rem, 19vw, 5.6rem);
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.12em;
+    letter-spacing: -0.06em;
     text-align: center;
   }
 
@@ -2263,23 +2267,23 @@ figcaption {
   }
 
   .scroll-cinema {
-    min-height: 185svh;
+    min-height: 150svh;
   }
 
   .hero-cinema {
-    min-height: 175svh;
+    min-height: 135svh;
   }
 
   .second-cinema {
-    min-height: 190svh;
+    min-height: 155svh;
   }
 
   .hero-copy {
-    padding-bottom: 42vh;
+    padding-bottom: 24vh;
   }
 
   .hero-meta {
-    margin-top: -54vh;
+    margin-top: -38vh;
   }
 
   .hero-side-word {

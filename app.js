@@ -51,19 +51,32 @@ let ringY = pointerY;
 let framePending = false;
 let desktopLoopStarted = false;
 
+function playVideo(video) {
+  if (!video || document.hidden) return;
+  video.play().catch(() => {});
+}
+
 function initPreloader() {
   if (!preloader) return;
 
   document.body.classList.add("is-loading");
   const heroVideo = document.querySelector(".hero-cinema .cinema-main");
   const reelVideo = document.querySelector(".loader-reel video");
-  const heroImage = document.querySelector(".lock-frame img");
-  const assets = [reelVideo, heroVideo, heroImage].filter(Boolean);
+  const assets = [reelVideo, heroVideo].filter(Boolean);
   const startedAt = performance.now();
-  const minimumDuration = reducedMotion ? 180 : 1450;
-  const maximumDuration = 4200;
+  const minimumDuration = reducedMotion ? 180 : touchDevice ? 720 : 1200;
+  const maximumDuration = touchDevice ? 2400 : 3400;
   let loaded = 0;
   let complete = false;
+  const loadedAssets = new WeakSet();
+
+  const dismissPreloader = () => {
+    preloader.classList.add("is-complete");
+    document.body.classList.remove("is-loading");
+    document.documentElement.classList.remove("is-loading");
+    playVideo(heroVideo);
+    window.setTimeout(() => preloader.remove(), touchDevice ? 980 : 1380);
+  };
 
   const update = () => {
     const progress = assets.length ? loaded / assets.length : 1;
@@ -91,14 +104,12 @@ function initPreloader() {
     if (loaderRing) loaderRing.style.setProperty("--dial-offset", "0");
     loaderCount.textContent = "100";
     loaderStatus.textContent = "Experience ready";
-    window.setTimeout(() => {
-      preloader.classList.add("is-complete");
-      document.body.classList.remove("is-loading");
-      document.documentElement.classList.remove("is-loading");
-    }, reducedMotion ? 80 : 420);
+    window.setTimeout(dismissPreloader, reducedMotion ? 80 : 420);
   };
 
-  const markLoaded = () => {
+  const markLoaded = (asset) => {
+    if (loadedAssets.has(asset)) return;
+    loadedAssets.add(asset);
     loaded += 1;
     update();
     if (loaded >= assets.length) reveal();
@@ -107,28 +118,26 @@ function initPreloader() {
   assets.forEach((asset) => {
     if (asset.tagName === "IMG") {
       if (asset.complete && asset.naturalWidth) {
-        markLoaded();
+        markLoaded(asset);
       } else {
-        asset.addEventListener("load", markLoaded, { once: true });
-        asset.addEventListener("error", markLoaded, { once: true });
+        asset.addEventListener("load", () => markLoaded(asset), { once: true });
+        asset.addEventListener("error", () => markLoaded(asset), { once: true });
       }
       return;
     }
 
-    if (asset.readyState >= 2) {
-      markLoaded();
+    if (asset.readyState >= 1) {
+      markLoaded(asset);
     } else {
-      asset.addEventListener("loadeddata", markLoaded, { once: true });
-      asset.addEventListener("error", markLoaded, { once: true });
+      asset.addEventListener("loadedmetadata", () => markLoaded(asset), { once: true });
+      asset.addEventListener("error", () => markLoaded(asset), { once: true });
     }
   });
 
   update();
   window.setTimeout(reveal, maximumDuration);
   window.setTimeout(() => {
-    document.body.classList.remove("is-loading");
-    document.documentElement.classList.remove("is-loading");
-    preloader.classList.add("is-complete");
+    dismissPreloader();
   }, maximumDuration + 1200);
 }
 
@@ -143,11 +152,30 @@ const fadeObserver = new IntersectionObserver(
 
 fadeTargets.forEach((target) => fadeObserver.observe(target));
 
+function ensureVideoSource(video) {
+  if (!video.dataset.src || video.getAttribute("src")) return;
+  video.src = video.dataset.src;
+  video.removeAttribute("data-src");
+  video.load();
+}
+
+const videoWarmObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      ensureVideoSource(entry.target);
+      videoWarmObserver.unobserve(entry.target);
+    });
+  },
+  { threshold: 0, rootMargin: touchDevice ? "85% 0px 85% 0px" : "140% 0px 140% 0px" }
+);
+
 const videoObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.play().catch(() => {});
+        ensureVideoSource(entry.target);
+        playVideo(entry.target);
       } else {
         entry.target.pause();
       }
@@ -159,8 +187,27 @@ const videoObserver = new IntersectionObserver(
 motionVideos.forEach((video) => {
   video.muted = true;
   video.playsInline = true;
-  video.addEventListener("canplay", () => video.classList.add("is-ready"), { once: true });
+  const markVideoReady = () => video.classList.add("is-ready");
+  if (video.readyState >= 2) markVideoReady();
+  video.addEventListener("loadeddata", markVideoReady, { once: true });
+  video.addEventListener("canplay", markVideoReady, { once: true });
+  videoWarmObserver.observe(video);
   videoObserver.observe(video);
+});
+
+function resumeVisibleVideos() {
+  motionVideos.forEach((video) => {
+    const rect = video.getBoundingClientRect();
+    if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+    ensureVideoSource(video);
+    playVideo(video);
+  });
+}
+
+window.addEventListener("pageshow", resumeVisibleVideos);
+window.addEventListener("pointerdown", resumeVisibleVideos, { once: true, passive: true });
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) resumeVisibleVideos();
 });
 
 function updateMeasurements() {

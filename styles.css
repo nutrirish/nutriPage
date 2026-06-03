@@ -2603,13 +2603,18 @@ figcaption {
   }
 
   .hero-scroll-cue {
-    top: calc(100svh - 102px);
-    left: 18px;
-    justify-items: start;
+    top: calc(100svh - 188px);
+    right: 16px;
+    bottom: auto;
+    left: 16px;
+    justify-items: center;
     gap: 9px;
-    padding: 10px 12px;
+    width: auto;
+    max-width: none;
+    padding: 10px 12px 9px;
     font-size: 0.56rem;
     letter-spacing: 0.13em;
+    text-align: center;
     transform: none;
   }
 

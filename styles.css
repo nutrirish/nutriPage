@@ -14,6 +14,19 @@
   background: var(--bg);
 }
 
+.theme-light {
+  --bg: #f2eadc;
+  --panel: #fff8ec;
+  --ink: #15130f;
+  --muted: #675c4f;
+  --soft: rgba(21, 19, 15, 0.72);
+  --line: rgba(80, 61, 39, 0.18);
+  --gold: #9f7c3e;
+  --bronze: #745b35;
+  --green: #d7e1d6;
+  --shadow: 0 28px 90px rgba(84, 65, 42, 0.2);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -30,6 +43,13 @@ body {
     radial-gradient(circle at 74% 9%, rgba(49, 70, 61, 0.24), transparent 36rem),
     radial-gradient(circle at 18% 68%, rgba(138, 112, 76, 0.1), transparent 30rem),
     linear-gradient(180deg, #040505 0%, #0a0d0c 42%, #040505 100%);
+}
+
+.theme-light body {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(159, 124, 62, 0.16), transparent 34rem),
+    radial-gradient(circle at 18% 68%, rgba(49, 70, 61, 0.12), transparent 30rem),
+    linear-gradient(180deg, #f7efe2 0%, #ede2d1 46%, #f8f1e5 100%);
 }
 
 body.is-loading {
@@ -626,11 +646,21 @@ body.cursor-active .cursor-ring {
   background: rgba(208, 180, 122, 0.06);
 }
 
+.theme-light .site-header {
+  color: var(--ink);
+  background: linear-gradient(180deg, rgba(239, 229, 212, 0.84), rgba(239, 229, 212, 0));
+}
+
+.theme-light .brand span {
+  color: #f8f1e5;
+  background: #15130f;
+}
+
 .private-float {
   position: fixed;
   right: clamp(14px, 2vw, 28px);
   bottom: clamp(14px, 2vw, 28px);
-  z-index: 110;
+  z-index: 340;
   display: flex;
   align-items: center;
   gap: 11px;
@@ -646,6 +676,160 @@ body.cursor-active .cursor-ring {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: border-color 220ms ease, background 220ms ease, transform 220ms ease;
+}
+
+.theme-toggle {
+  position: fixed;
+  left: clamp(14px, 2vw, 28px);
+  bottom: clamp(14px, 2vw, 28px);
+  z-index: 340;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 7px 8px 7px 14px;
+  border: 1px solid rgba(208, 180, 122, 0.5);
+  color: var(--ink);
+  background: rgba(7, 9, 8, 0.82);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(18px);
+  cursor: pointer;
+  font: 700 0.62rem/1 "Space Mono", monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: border-color 220ms ease, background 220ms ease, transform 220ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+}
+
+.theme-toggle i {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5e3b3, var(--gold));
+}
+
+.theme-toggle i::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: #15120d;
+  box-shadow: 0 0 0 5px rgba(21, 18, 13, 0.16);
+  transition: transform 260ms ease, background 260ms ease, inset 260ms ease;
+}
+
+.theme-light .theme-toggle,
+.theme-light .private-float {
+  color: #15130f;
+  background: rgba(255, 248, 236, 0.78);
+  box-shadow: 0 16px 40px rgba(84, 65, 42, 0.18);
+}
+
+.theme-light .theme-toggle i::before {
+  inset: 7px 11px 7px 7px;
+  background: #fff8ec;
+  transform: translateX(5px);
+}
+
+.theme-light .private-float i {
+  color: #fff8ec;
+  background: #15130f;
+}
+
+.theme-light .cinema-stage,
+.theme-light .services,
+.theme-light .video-grid,
+.theme-light .credential,
+.theme-light .footer {
+  background: #f4eadb;
+}
+
+.theme-light .scroll-vignette,
+.theme-light .scanlines,
+.theme-light .analog-noise,
+.theme-light .film-scratches {
+  opacity: 0.035;
+}
+
+.theme-light .cinema-stage::after,
+.theme-light .hero-shade,
+.theme-light .intake-hero-shade {
+  background:
+    linear-gradient(90deg, rgba(247, 239, 226, 0.78), rgba(247, 239, 226, 0.28) 55%, rgba(247, 239, 226, 0.48)),
+    linear-gradient(0deg, rgba(247, 239, 226, 0.86), transparent 46%, rgba(247, 239, 226, 0.34));
+}
+
+.theme-light .button.ghost {
+  color: var(--ink);
+  background: rgba(21, 19, 15, 0.04);
+}
+
+.theme-light .horizontal-gallery {
+  background: #f8f1e5;
+}
+
+.theme-light .intake-page {
+  background:
+    radial-gradient(circle at 78% 36%, rgba(159, 124, 62, 0.16), transparent 32rem),
+    linear-gradient(180deg, #f2eadc, #fff8ec 52%, #efe2cf);
+}
+
+.theme-light .intake-header {
+  background: linear-gradient(180deg, rgba(239, 229, 212, 0.86), rgba(239, 229, 212, 0));
+}
+
+.theme-light .contact-form,
+.theme-light .intake-form {
+  background: rgba(255, 248, 236, 0.76);
+  box-shadow: 0 26px 78px rgba(84, 65, 42, 0.18);
+}
+
+.theme-light .contact-form input,
+.theme-light .contact-form select,
+.theme-light .contact-form textarea,
+.theme-light .intake-form input,
+.theme-light .intake-form select,
+.theme-light .intake-form textarea {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.theme-light .contact-form input:focus,
+.theme-light .contact-form select:focus,
+.theme-light .contact-form textarea:focus,
+.theme-light .intake-form input:focus,
+.theme-light .intake-form select:focus,
+.theme-light .intake-form textarea:focus {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.theme-light .review-meter {
+  background: rgba(80, 61, 39, 0.12);
+}
+
+.theme-light .review-choices b {
+  color: rgba(21, 19, 15, 0.7);
+  background: rgba(255, 248, 236, 0.56);
+}
+
+.theme-light .review-choices input:checked + b {
+  color: var(--ink);
+  background: rgba(159, 124, 62, 0.14);
+}
+
+.theme-light .review-personal {
+  background: linear-gradient(90deg, rgba(159, 124, 62, 0.13), rgba(255, 248, 236, 0.25));
+}
+
+.theme-light .intake-direct {
+  background:
+    linear-gradient(90deg, rgba(242, 234, 220, 0.92), rgba(242, 234, 220, 0.62)),
+    url("./NASSETS/IMG_4535.jpg") center 34% / cover;
 }
 
 .private-float:hover {
@@ -2602,19 +2786,32 @@ figcaption {
     height: 30px;
   }
 
+  .theme-toggle {
+    left: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 8px;
+    min-height: 42px;
+    padding: 6px 6px 6px 12px;
+    font-size: 0.55rem;
+  }
+
+  .theme-toggle i {
+    width: 30px;
+    height: 30px;
+  }
+
   .hero-scroll-cue {
-    top: calc(100svh - 188px);
-    right: 16px;
+    top: calc(100svh - 142px);
+    right: auto;
     bottom: auto;
     left: 16px;
-    justify-items: center;
+    justify-items: start;
     gap: 9px;
-    width: auto;
-    max-width: none;
+    width: min(148px, calc(100vw - 32px));
     padding: 10px 12px 9px;
     font-size: 0.56rem;
     letter-spacing: 0.13em;
-    text-align: center;
+    text-align: left;
     transform: none;
   }
 

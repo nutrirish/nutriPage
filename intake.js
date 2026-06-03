@@ -57,6 +57,8 @@ const reviewPersonal = document.querySelector("[data-review-personal] p");
 const submissionOverlay = document.querySelector("[data-submission-overlay]");
 const submissionName = document.querySelector("[data-submission-name]");
 const submissionClose = document.querySelector("[data-submission-close]");
+const themeToggle = document.querySelector("[data-theme-toggle]");
+const themeLabel = document.querySelector("[data-theme-label]");
 const reviewTitles = [
   "Personal context",
   "Desired outcome",
@@ -65,6 +67,32 @@ const reviewTitles = [
 ];
 const reviewChapterCount = reviewScreens.length;
 let activeReviewScreen = 0;
+
+function applyTheme(mode) {
+  const light = mode === "light";
+  document.documentElement.classList.toggle("theme-light", light);
+  themeToggle?.setAttribute("aria-pressed", String(light));
+  themeToggle?.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
+  if (themeLabel) themeLabel.textContent = light ? "Dark" : "Light";
+}
+
+function initThemeToggle() {
+  let savedTheme = "dark";
+  try {
+    savedTheme = localStorage.getItem("nutrirish-theme") || "dark";
+  } catch (error) {}
+
+  applyTheme(savedTheme);
+  themeToggle?.addEventListener("click", () => {
+    const nextTheme = document.documentElement.classList.contains("theme-light") ? "dark" : "light";
+    try {
+      localStorage.setItem("nutrirish-theme", nextTheme);
+    } catch (error) {}
+    applyTheme(nextTheme);
+  });
+}
+
+initThemeToggle();
 
 document.querySelectorAll("[data-score-input]").forEach((input) => {
   input.addEventListener("input", () => {

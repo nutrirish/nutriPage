@@ -40,6 +40,8 @@ const cinemas = [...document.querySelectorAll("[data-cinema]")].map((section) =>
   video: section.querySelector(".cinema-main"),
   panel: section.querySelector(".cinema-panel"),
 }));
+const themeToggle = document.querySelector("[data-theme-toggle]");
+const themeLabel = document.querySelector("[data-theme-label]");
 
 let targetScroll = window.scrollY;
 let smoothScroll = targetScroll;
@@ -53,6 +55,30 @@ let ringX = pointerX;
 let ringY = pointerY;
 let framePending = false;
 let desktopLoopStarted = false;
+
+function applyTheme(mode) {
+  const light = mode === "light";
+  document.documentElement.classList.toggle("theme-light", light);
+  themeToggle?.setAttribute("aria-pressed", String(light));
+  themeToggle?.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
+  if (themeLabel) themeLabel.textContent = light ? "Dark" : "Light";
+}
+
+function initThemeToggle() {
+  let savedTheme = "dark";
+  try {
+    savedTheme = localStorage.getItem("nutrirish-theme") || "dark";
+  } catch (error) {}
+
+  applyTheme(savedTheme);
+  themeToggle?.addEventListener("click", () => {
+    const nextTheme = document.documentElement.classList.contains("theme-light") ? "dark" : "light";
+    try {
+      localStorage.setItem("nutrirish-theme", nextTheme);
+    } catch (error) {}
+    applyTheme(nextTheme);
+  });
+}
 
 function playVideo(video) {
   if (!video || document.hidden) return;
@@ -445,4 +471,5 @@ window.addEventListener(
 updateMeasurements();
 window.addEventListener("load", updateMeasurements, { once: true });
 initPreloader();
+initThemeToggle();
 requestFrame();

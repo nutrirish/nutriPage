@@ -14,7 +14,12 @@
       href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600;6..96,700;6..96,800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260603-7" />
+    <script>
+      try {
+        if (localStorage.getItem("nutrirish-theme") === "light") document.documentElement.classList.add("theme-light");
+      } catch (error) {}
+    </script>
+    <link rel="stylesheet" href="./styles.css?v=20260603-8" />
   </head>
   <body class="intake-page">
     <div class="grain" aria-hidden="true"></div>
@@ -23,6 +28,10 @@
       <span>Begin enquiry</span>
       <i>NR</i>
     </a>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode" aria-pressed="false">
+      <span data-theme-label>Light</span>
+      <i aria-hidden="true"></i>
+    </button>
 
     <header class="site-header intake-header">
       <a class="brand" href="./index.html" aria-label="Return to NutriRish home">
@@ -251,6 +260,6 @@
       <a href="./index.html">Return home</a>
     </footer>
 
-    <script src="./intake.js?v=20260602-3"></script>
+    <script src="./intake.js?v=20260603-8"></script>
   </body>
 </html>

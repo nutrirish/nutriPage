@@ -53,16 +53,17 @@ const reviewActions = document.querySelector("[data-review-actions]");
 const reviewNext = document.querySelector("[data-review-next]");
 const reviewPrev = document.querySelector("[data-review-prev]");
 const reviewSubmit = document.querySelector("[data-review-submit]");
+const reviewPersonal = document.querySelector("[data-review-personal] p");
+const submissionOverlay = document.querySelector("[data-submission-overlay]");
+const submissionName = document.querySelector("[data-submission-name]");
+const submissionClose = document.querySelector("[data-submission-close]");
 const reviewTitles = [
   "Personal context",
-  "Goals and body",
-  "Nutrition rhythm",
-  "Food relationship",
-  "Recovery signals",
-  "Movement pattern",
-  "Coaching fit",
-  "Complete",
+  "Desired outcome",
+  "Current rhythm",
+  "Private follow-up",
 ];
+const reviewChapterCount = reviewScreens.length;
 let activeReviewScreen = 0;
 
 document.querySelectorAll("[data-score-input]").forEach((input) => {
@@ -75,16 +76,64 @@ function showReviewScreen(index) {
   activeReviewScreen = intakeClamp(index, 0, reviewScreens.length - 1);
   reviewScreens.forEach((screen, screenIndex) => screen.classList.toggle("active", screenIndex === activeReviewScreen));
 
-  const completed = activeReviewScreen === reviewScreens.length - 1;
-  const visibleStep = Math.min(activeReviewScreen + 1, reviewScreens.length - 1);
+  const visibleStep = activeReviewScreen + 1;
   reviewTitle.textContent = reviewTitles[activeReviewScreen];
-  reviewCount.textContent = completed ? "Complete" : `${String(visibleStep).padStart(2, "0")} / 07`;
-  reviewBar.style.transform = `scaleX(${completed ? 1 : visibleStep / 7})`;
-  reviewActions.hidden = completed;
-  reviewActions.classList.toggle("has-back", activeReviewScreen > 0 && !completed);
-  reviewActions.classList.toggle("is-final", activeReviewScreen === 6);
+  reviewCount.textContent = `${String(visibleStep).padStart(2, "0")} / ${String(reviewChapterCount).padStart(2, "0")}`;
+  reviewBar.style.transform = `scaleX(${visibleStep / reviewChapterCount})`;
+  reviewActions.hidden = false;
+  reviewActions.classList.toggle("has-back", activeReviewScreen > 0);
+  reviewActions.classList.toggle("is-final", activeReviewScreen === reviewChapterCount - 1);
   reviewError.textContent = "";
   document.querySelector("#enquiry").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function updatePersonalSignal() {
+  if (!reviewPersonal || !wellnessForm) return;
+  const name = wellnessForm.elements.name?.value.trim();
+  const goal = wellnessForm.elements.mainGoal?.value;
+  const training = wellnessForm.elements.trainingFrequency?.value;
+  const struggle = wellnessForm.elements.nutritionStruggle?.value;
+
+  if (training && goal) {
+    reviewPersonal.textContent = `${name ? `${name}, your` : "Your"} ${goal.toLowerCase()} plan should respect a ${training.toLowerCase()} movement rhythm${struggle ? ` and solve the ${struggle.toLowerCase()} pattern without adding noise.` : "."}`;
+  } else if (goal) {
+    reviewPersonal.textContent = `${name ? `${name}, this` : "This"} review will focus on ${goal.toLowerCase()} while keeping the plan realistic for your actual calendar.`;
+  } else if (name) {
+    reviewPersonal.textContent = `${name}, a few thoughtful answers are enough to begin shaping your private review.`;
+  } else {
+    reviewPersonal.textContent = "A few thoughtful answers are enough to begin shaping your private review.";
+  }
+}
+
+function showSubmissionOverlay() {
+  const name = wellnessForm?.elements.name?.value.trim();
+  if (submissionName) {
+    submissionName.textContent = name
+      ? `${name}, your context has been received privately.`
+      : "Your context has been received privately.";
+  }
+  submissionOverlay?.classList.add("is-visible");
+  submissionOverlay?.setAttribute("aria-hidden", "false");
+  document.body.classList.add("submission-open");
+  window.setTimeout(() => submissionClose?.focus(), 520);
+}
+
+function hideSubmissionOverlay() {
+  submissionOverlay?.classList.remove("is-visible");
+  submissionOverlay?.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("submission-open");
+}
+
+wellnessForm?.addEventListener("input", updatePersonalSignal);
+wellnessForm?.addEventListener("change", updatePersonalSignal);
+submissionClose?.addEventListener("click", hideSubmissionOverlay);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && submissionOverlay?.classList.contains("is-visible")) hideSubmissionOverlay();
+});
+
+const previewSubmission = new URLSearchParams(window.location.search).has("preview-success");
+if (["localhost", "127.0.0.1"].includes(window.location.hostname) && previewSubmission) {
+  window.setTimeout(showSubmissionOverlay, 240);
 }
 
 function validateReviewScreen() {
@@ -113,7 +162,7 @@ function validateReviewScreen() {
 
 reviewNext?.addEventListener("click", () => {
   if (!validateReviewScreen()) return;
-  showReviewScreen(activeReviewScreen + 1);
+  if (activeReviewScreen < reviewChapterCount - 1) showReviewScreen(activeReviewScreen + 1);
 });
 
 reviewPrev?.addEventListener("click", () => showReviewScreen(activeReviewScreen - 1));
@@ -136,7 +185,7 @@ wellnessForm?.addEventListener("submit", async (event) => {
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload),
     });
-    showReviewScreen(7);
+    showSubmissionOverlay();
   } catch (error) {
     console.error(error);
     reviewError.textContent = "Something went wrong while submitting. Please try again.";

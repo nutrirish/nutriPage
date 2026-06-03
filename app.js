@@ -13,6 +13,8 @@ const progressBar = document.querySelector(".progress span");
 const gallery = document.querySelector(".horizontal-gallery");
 const track = document.querySelector("[data-track]");
 const galleryCards = document.querySelectorAll(".gallery-track figure");
+const videoGrid = document.querySelector(".video-grid");
+const filmGrid = document.querySelector(".film-grid");
 const depthMedia = [...document.querySelectorAll("[data-depth]")];
 const motionSections = [...document.querySelectorAll("[data-section-motion]")];
 const slideRows = [...document.querySelectorAll("[data-slide-row]")];
@@ -44,6 +46,7 @@ let smoothScroll = targetScroll;
 let viewportHeight = window.innerHeight;
 let maxScroll = 1;
 let galleryTravel = 0;
+let mobileFilmTravel = 0;
 let pointerX = -80;
 let pointerY = -80;
 let ringX = pointerX;
@@ -191,6 +194,7 @@ motionVideos.forEach((video) => {
   if (video.readyState >= 2) markVideoReady();
   video.addEventListener("loadeddata", markVideoReady, { once: true });
   video.addEventListener("canplay", markVideoReady, { once: true });
+  video.addEventListener("error", markVideoReady, { once: true });
   videoWarmObserver.observe(video);
   videoObserver.observe(video);
 });
@@ -214,6 +218,7 @@ function updateMeasurements() {
   viewportHeight = window.innerHeight;
   maxScroll = Math.max(1, root.scrollHeight - viewportHeight);
   galleryTravel = track ? Math.max(0, track.scrollWidth - window.innerWidth + 82) : 0;
+  mobileFilmTravel = filmGrid ? Math.max(0, filmGrid.scrollWidth - window.innerWidth + 36) : 0;
 
   cinemas.forEach((cinema) => {
     cinema.top = cinema.section.offsetTop;
@@ -255,6 +260,23 @@ function updateGallery(scroll) {
     card.style.setProperty("--card-y", `${wave * (touchDevice ? 6 : 16)}px`);
     card.style.setProperty("--image-scale", `${1.025 + Math.abs(wave) * (touchDevice ? 0.012 : 0.035)}`);
     card.style.setProperty("--caption-x", `${wave * (touchDevice ? 0 : 10)}px`);
+  });
+}
+
+function updateMobileFilmRail(scroll) {
+  if (!touchDevice || !videoGrid || !filmGrid) return;
+  const top = videoGrid.offsetTop;
+  const scrollable = Math.max(1, videoGrid.offsetHeight - viewportHeight);
+  const progress = clamp((scroll - top) / scrollable, 0, 1);
+  filmGrid.style.setProperty("--mobile-film-x", `${-mobileFilmTravel * progress}px`);
+  const activeIndex = Math.round(progress * Math.max(0, filmCards.length - 1));
+
+  filmCards.forEach((card, index) => {
+    const center = filmCards.length <= 1 ? 0 : index / (filmCards.length - 1);
+    const focus = index === activeIndex ? 1 : 0;
+    const distance = index - activeIndex;
+    card.style.setProperty("--mobile-card-focus", focus.toFixed(3));
+    card.style.setProperty("--mobile-card-distance", distance.toFixed(0));
   });
 }
 
@@ -365,6 +387,7 @@ function frame() {
 
   updateProgress(smoothScroll);
   updateGallery(smoothScroll);
+  updateMobileFilmRail(smoothScroll);
   updateCinemas(smoothScroll);
   updateEditorialDrift();
   updateSectionMotion(smoothScroll);

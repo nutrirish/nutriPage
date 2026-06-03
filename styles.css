@@ -977,24 +977,28 @@ body.cursor-active .cursor-ring {
 
 .scroll-cinema {
   position: relative;
+  overflow: clip;
   min-height: 245vh;
 }
 
 .hero-cinema {
-  min-height: 172vh;
+  min-height: 150vh;
 }
 
 .second-cinema {
   margin-top: clamp(-180px, -14vw, -96px);
-  min-height: 230vh;
+  min-height: 205vh;
 }
 
 .cinema-stage {
   position: sticky;
   top: 0;
+  left: 0;
   overflow: hidden;
-  width: 100vw;
+  width: 100%;
+  min-width: 100vw;
   height: 100vh;
+  margin-inline: calc(50% - 50vw);
   background: #080806;
 }
 
@@ -3410,6 +3414,7 @@ figcaption {
     flex: 0 0 min(84vw, 340px);
     height: auto;
     aspect-ratio: 0.78;
+    box-shadow: 0 20px 52px rgba(31, 50, 25, 0.28);
   }
 
   .gallery-track figcaption {
@@ -3469,15 +3474,19 @@ figcaption {
     min-height: 0;
     aspect-ratio: 0.78;
     margin: 0;
-    opacity: 1;
-    transform: translate3d(0, var(--film-y, 0px), 0);
+    opacity: var(--mobile-card-opacity, 0.72);
+    transform:
+      perspective(900px)
+      translate3d(0, calc(var(--film-y, 0px) + var(--mobile-card-y, 0px)), 0)
+      rotateX(var(--mobile-card-tilt, 0deg))
+      scale(var(--mobile-card-scale, 0.96));
     box-shadow: 0 22px 56px rgba(0, 0, 0, 0.32);
     pointer-events: auto;
-    transition: opacity 420ms ease, transform 520ms ease;
+    transition: opacity 180ms linear, transform 180ms linear, filter 180ms linear;
   }
 
   .film-grid article[data-fade].in-view {
-    opacity: 1;
+    opacity: var(--mobile-card-opacity, 0.9);
   }
 
   .film-grid video {

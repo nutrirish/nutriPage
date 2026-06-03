@@ -16,15 +16,13 @@
     />
     <script>
       try {
-        const themeVersion = "20260603-light-default";
+        const themeVersion = "20260603-dark-default";
         const savedTheme = localStorage.getItem("nutrirish-theme");
         const savedVersion = localStorage.getItem("nutrirish-theme-version");
-        if (savedVersion !== themeVersion || savedTheme !== "dark") document.documentElement.classList.add("theme-light");
-      } catch (error) {
-        document.documentElement.classList.add("theme-light");
-      }
+        if (savedVersion === themeVersion && savedTheme === "light") document.documentElement.classList.add("theme-light");
+      } catch (error) {}
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260603-11" />
+    <link rel="stylesheet" href="./styles.css?v=20260603-12" />
   </head>
   <body>
     <div class="preloader" data-preloader aria-live="polite" aria-label="Loading NutriRish experience">
@@ -79,8 +77,8 @@
     <a class="scroll-float" href="#method" aria-label="Explore the NutriRish method">
       <span>Explore</span>
     </a>
-    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="true">
-      <span data-theme-label>Dark</span>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode" aria-pressed="false">
+      <span data-theme-label>Light</span>
       <i aria-hidden="true"></i>
     </button>
 
@@ -369,6 +367,6 @@
       </div>
     </footer>
 
-    <script src="./app.js?v=20260603-11"></script>
+    <script src="./app.js?v=20260603-12"></script>
   </body>
 </html>

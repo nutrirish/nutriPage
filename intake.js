@@ -77,13 +77,13 @@ function applyTheme(mode) {
 }
 
 function initThemeToggle() {
-  const themeVersion = "20260603-light-default";
-  let savedTheme = "light";
+  const themeVersion = "20260603-dark-default";
+  let savedTheme = "dark";
   try {
     const savedVersion = localStorage.getItem("nutrirish-theme-version");
-    savedTheme = savedVersion === themeVersion ? localStorage.getItem("nutrirish-theme") || "light" : "light";
+    savedTheme = savedVersion === themeVersion ? localStorage.getItem("nutrirish-theme") || "dark" : "dark";
     localStorage.setItem("nutrirish-theme-version", themeVersion);
-    if (savedVersion !== themeVersion) localStorage.setItem("nutrirish-theme", "light");
+    if (savedVersion !== themeVersion) localStorage.setItem("nutrirish-theme", "dark");
   } catch (error) {}
 
   applyTheme(savedTheme);

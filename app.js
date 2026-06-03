@@ -65,13 +65,13 @@ function applyTheme(mode) {
 }
 
 function initThemeToggle() {
-  const themeVersion = "20260603-light-default";
-  let savedTheme = "light";
+  const themeVersion = "20260603-dark-default";
+  let savedTheme = "dark";
   try {
     const savedVersion = localStorage.getItem("nutrirish-theme-version");
-    savedTheme = savedVersion === themeVersion ? localStorage.getItem("nutrirish-theme") || "light" : "light";
+    savedTheme = savedVersion === themeVersion ? localStorage.getItem("nutrirish-theme") || "dark" : "dark";
     localStorage.setItem("nutrirish-theme-version", themeVersion);
-    if (savedVersion !== themeVersion) localStorage.setItem("nutrirish-theme", "light");
+    if (savedVersion !== themeVersion) localStorage.setItem("nutrirish-theme", "dark");
   } catch (error) {}
 
   applyTheme(savedTheme);
@@ -290,16 +290,16 @@ function updateGallery(scroll) {
     const rect = card.getBoundingClientRect();
     const centerOffset = clamp((rect.top + rect.height / 2 - viewportHeight / 2) / viewportHeight, -1, 1);
     const wave = Math.sin(progress * Math.PI * 2 + index * 0.78);
-    const y = centerOffset * (touchDevice ? 9 : 18) + wave * (touchDevice ? 5 : 12);
-    const tilt = (wave - centerOffset) * (touchDevice ? 1.1 : 2.2);
+    const y = centerOffset * (touchDevice ? 18 : 22) + wave * (touchDevice ? 12 : 16);
+    const tilt = (wave - centerOffset) * (touchDevice ? 3.1 : 2.8);
     const visibility = clamp((viewportHeight - rect.top) / (viewportHeight + rect.height), 0, 1);
 
     card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
     card.style.setProperty("--gallery-tilt", `${tilt.toFixed(2)}deg`);
-    card.style.setProperty("--gallery-card-scale", `${(0.965 + visibility * 0.035).toFixed(3)}`);
-    card.style.setProperty("--gallery-card-opacity", `${(0.78 + visibility * 0.22).toFixed(3)}`);
-    card.style.setProperty("--image-scale", `${(1.015 + Math.abs(wave) * (touchDevice ? 0.018 : 0.035)).toFixed(3)}`);
-    card.style.setProperty("--caption-x", `${(wave * (touchDevice ? 5 : 10)).toFixed(2)}px`);
+    card.style.setProperty("--gallery-card-scale", `${(0.945 + visibility * 0.055).toFixed(3)}`);
+    card.style.setProperty("--gallery-card-opacity", `${(0.66 + visibility * 0.34).toFixed(3)}`);
+    card.style.setProperty("--image-scale", `${(1.02 + Math.abs(wave) * (touchDevice ? 0.04 : 0.04)).toFixed(3)}`);
+    card.style.setProperty("--caption-x", `${(wave * (touchDevice ? 14 : 12)).toFixed(2)}px`);
   });
 }
 
@@ -312,11 +312,20 @@ function updateMobileFilmRail(scroll) {
   const activeIndex = Math.round(progress * Math.max(0, filmCards.length - 1));
 
   filmCards.forEach((card, index) => {
-    const center = filmCards.length <= 1 ? 0 : index / (filmCards.length - 1);
+    const rect = card.getBoundingClientRect();
+    const cardCenter = rect.top + rect.height / 2;
+    const viewportCenter = viewportHeight / 2;
+    const centerDelta = clamp((cardCenter - viewportCenter) / viewportHeight, -1, 1);
+    const focusByViewport = 1 - Math.min(1, Math.abs(centerDelta) * 1.8);
     const focus = index === activeIndex ? 1 : 0;
     const distance = index - activeIndex;
-    card.style.setProperty("--mobile-card-focus", focus.toFixed(3));
+    const blendedFocus = Math.max(focus, focusByViewport);
+    card.style.setProperty("--mobile-card-focus", blendedFocus.toFixed(3));
     card.style.setProperty("--mobile-card-distance", distance.toFixed(0));
+    card.style.setProperty("--mobile-card-y", `${(centerDelta * -34).toFixed(2)}px`);
+    card.style.setProperty("--mobile-card-tilt", `${(centerDelta * -4.5).toFixed(2)}deg`);
+    card.style.setProperty("--mobile-card-scale", `${(0.94 + blendedFocus * 0.06).toFixed(3)}`);
+    card.style.setProperty("--mobile-card-opacity", `${(0.58 + blendedFocus * 0.42).toFixed(3)}`);
   });
 }
 

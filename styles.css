@@ -1823,7 +1823,8 @@ p {
 
 .horizontal-gallery {
   position: relative;
-  min-height: 245vh;
+  overflow: hidden;
+  min-height: auto;
   background:
     radial-gradient(circle at 82% 18%, rgba(143, 184, 110, 0.2), transparent 30rem),
     linear-gradient(180deg, #fffaf0, #edf3df);
@@ -1831,11 +1832,10 @@ p {
 }
 
 .gallery-sticky {
-  position: sticky;
-  top: 0;
+  position: relative;
   overflow: hidden;
-  height: 100vh;
-  padding: clamp(74px, 7vw, 96px) 0 34px clamp(18px, 6vw, 82px);
+  min-height: auto;
+  padding: clamp(74px, 7vw, 108px) 0 clamp(70px, 8vw, 118px) clamp(18px, 6vw, 82px);
 }
 
 .gallery-copy {
@@ -1862,18 +1862,28 @@ p {
 .gallery-track {
   display: flex;
   gap: 22px;
-  margin-top: 26px;
-  will-change: transform;
-  transform: translate3d(var(--gallery-x, 0px), 0, 0);
+  margin-top: clamp(28px, 4vw, 52px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 clamp(18px, 6vw, 82px) 12px 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  transform: none !important;
+  will-change: scroll-position;
+}
+
+.gallery-track::-webkit-scrollbar {
+  display: none;
 }
 
 .gallery-track figure {
   flex: 0 0 min(40vw, 360px);
-  height: min(60vh, 640px);
+  height: min(62vh, 660px);
   margin: 0;
   overflow: hidden;
   background: #172015;
   box-shadow: 0 24px 60px rgba(31, 50, 25, 0.22);
+  scroll-snap-align: start;
   translate: 0 var(--card-y, 0px);
   will-change: translate;
 }
@@ -1886,10 +1896,12 @@ p {
 .gallery-track img {
   width: 100%;
   height: calc(100% - 44px);
-  object-fit: cover;
+  object-fit: contain;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(143, 184, 110, 0.08), transparent 60%),
+    #f3eddc;
   filter: contrast(1.04) saturate(0.93);
-  transform: scale(var(--image-scale, 1.04));
-  will-change: transform;
+  transform: none;
 }
 
 .gallery-track figure:nth-child(1) img,
@@ -3376,26 +3388,7 @@ figcaption {
   }
 
   .hero-scroll-cue {
-    top: calc(100svh - 142px);
-    right: auto;
-    bottom: auto;
-    left: 16px;
-    justify-items: start;
-    gap: 9px;
-    width: min(148px, calc(100vw - 32px));
-    padding: 10px 12px 9px;
-    font-size: 0.56rem;
-    letter-spacing: 0.13em;
-    text-align: left;
-    transform: none;
-  }
-
-  .hero-scroll-cue:hover {
-    transform: translateY(-2px);
-  }
-
-  .hero-scroll-cue i {
-    height: 34px;
+    display: none;
   }
 
   .stats {
@@ -3407,15 +3400,14 @@ figcaption {
   }
 
   .gallery-sticky {
-    position: sticky;
-    top: 0;
-    overflow: hidden;
-    height: 100svh;
-    padding: 72px 0 42px 18px;
+    position: relative;
+    overflow: visible;
+    height: auto;
+    padding: 72px 0 56px 18px;
   }
 
   .horizontal-gallery {
-    min-height: 230svh;
+    min-height: auto;
   }
 
   .gallery-copy {
@@ -3430,16 +3422,14 @@ figcaption {
     gap: 14px;
     margin-top: 22px;
     padding: 0 18px 18px 0;
-    overflow: visible;
-  }
-
-  .gallery-track::-webkit-scrollbar {
-    display: none;
+    overflow-x: auto;
+    transform: none !important;
   }
 
   .gallery-track figure {
-    flex: 0 0 min(82vw, 330px);
-    height: min(54vh, 500px);
+    flex: 0 0 min(84vw, 340px);
+    height: auto;
+    aspect-ratio: 0.78;
   }
 
   .gallery-track figcaption {
@@ -3447,10 +3437,10 @@ figcaption {
   }
 
   .video-grid {
-    min-height: 650svh;
-    overflow: clip;
+    min-height: auto;
+    overflow: hidden;
     padding-top: 74px;
-    padding-bottom: 52px;
+    padding-bottom: 74px;
   }
 
   .video-grid .section-kicker,
@@ -3473,14 +3463,15 @@ figcaption {
   }
 
   .film-grid {
-    position: sticky;
-    top: 24svh;
-    display: block;
+    position: relative;
+    top: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
     width: auto;
-    height: min(58svh, 540px);
-    margin-top: 42px;
+    height: auto;
+    margin-top: 34px;
     padding: 0 18px 0 0;
-    grid-template-columns: none;
     transform: none !important;
     will-change: auto;
   }
@@ -3491,35 +3482,28 @@ figcaption {
   }
 
   .film-grid article {
-    position: absolute;
-    inset: 0 18px 0 0;
+    position: relative;
+    inset: auto;
     width: 100%;
-    height: 100%;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 0.78;
     margin: 0;
-    transform:
-      perspective(1200px)
-      translate3d(0, calc((1 - var(--mobile-card-focus, 0)) * 22px), 0)
-      scale(calc(0.965 + var(--mobile-card-focus, 0) * 0.035));
-    opacity: var(--mobile-card-focus, 0);
-    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.42);
-    pointer-events: none;
-    transition: opacity 360ms ease, transform 360ms ease;
+    opacity: 1;
+    transform: translate3d(0, var(--film-y, 0px), 0);
+    box-shadow: 0 22px 56px rgba(0, 0, 0, 0.32);
+    pointer-events: auto;
+    transition: opacity 420ms ease, transform 520ms ease;
   }
 
   .film-grid article[data-fade].in-view {
-    opacity: var(--mobile-card-focus, 0);
-  }
-
-  .film-grid article:first-child {
-    opacity: var(--mobile-card-focus, 1);
-  }
-
-  .film-grid article:first-child[data-fade].in-view {
-    opacity: var(--mobile-card-focus, 1);
+    opacity: 1;
   }
 
   .film-grid video {
     height: 100%;
+    min-height: 0;
+    object-fit: cover;
   }
 
   .apply-actions {

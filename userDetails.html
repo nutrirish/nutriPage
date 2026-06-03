@@ -19,10 +19,13 @@
         if (localStorage.getItem("nutrirish-theme") === "light") document.documentElement.classList.add("theme-light");
       } catch (error) {}
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260603-8" />
+    <link rel="stylesheet" href="./styles.css?v=20260603-9" />
   </head>
   <body class="intake-page">
     <div class="grain" aria-hidden="true"></div>
+    <div class="botanical-atmosphere" aria-hidden="true">
+      <i></i><i></i><i></i><i></i>
+    </div>
     <div class="intake-progress" aria-hidden="true"><span data-intake-progress></span></div>
     <a class="private-float" href="#wellnessForm" aria-label="Begin your private NutriRish enquiry">
       <span>Begin enquiry</span>
@@ -50,11 +53,11 @@
         <video src="./NASSETS/web/IMG_1320.mp4" muted loop playsinline autoplay preload="metadata" aria-label="NutriRish private coaching lifestyle film"></video>
         <div class="intake-hero-shade" aria-hidden="true"></div>
         <div class="intake-hero-copy" data-intake-reveal>
-          <p class="eyebrow">Private client consideration</p>
-          <h1>Let us design the protocol around your life.</h1>
+          <p class="eyebrow">Private nutrition consideration</p>
+          <h1>Let us design the nutrition protocol around your life.</h1>
           <p>
-            A concise first conversation for people who value discretion, precision,
-            and a physique that keeps pace with their ambition.
+            A concise first conversation for people who value discretion, metabolic
+            precision, elegant food structure, and a physique that keeps pace with ambition.
           </p>
           <a class="button primary" href="#wellnessForm">Begin your enquiry</a>
         </div>
@@ -66,15 +69,16 @@
 
       <section class="intake-intro section-pad" data-intake-reveal>
         <p class="eyebrow">Quietly exacting</p>
-        <h2>A private intake, distilled to what matters.</h2>
+        <h2>A private nutrition intake, distilled to what matters.</h2>
         <div class="intake-intro-grid">
           <p>
-            No exhausting questionnaire. Share the essentials and NutriRish will reply
-            personally with the most relevant next step.
+            No exhausting questionnaire. Share the essentials: goal, rhythm, food culture,
+            training, digestion, and lifestyle constraints. NutriRish will reply personally
+            with the most relevant next step.
           </p>
           <div class="intake-signals">
             <span>Body composition</span>
-            <span>Executive energy</span>
+            <span>Protein and produce rhythm</span>
             <span>Travel resilience</span>
           </div>
         </div>
@@ -260,6 +264,6 @@
       <a href="./index.html">Return home</a>
     </footer>
 
-    <script src="./intake.js?v=20260603-8"></script>
+    <script src="./intake.js?v=20260603-9"></script>
   </body>
 </html>

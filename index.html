@@ -16,10 +16,15 @@
     />
     <script>
       try {
-        if (localStorage.getItem("nutrirish-theme") === "light") document.documentElement.classList.add("theme-light");
-      } catch (error) {}
+        const themeVersion = "20260603-light-default";
+        const savedTheme = localStorage.getItem("nutrirish-theme");
+        const savedVersion = localStorage.getItem("nutrirish-theme-version");
+        if (savedVersion !== themeVersion || savedTheme !== "dark") document.documentElement.classList.add("theme-light");
+      } catch (error) {
+        document.documentElement.classList.add("theme-light");
+      }
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260603-10" />
+    <link rel="stylesheet" href="./styles.css?v=20260603-11" />
   </head>
   <body>
     <div class="preloader" data-preloader aria-live="polite" aria-label="Loading NutriRish experience">
@@ -71,8 +76,11 @@
       <span>Private enquiry</span>
       <i>NR</i>
     </a>
-    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode" aria-pressed="false">
-      <span data-theme-label>Light</span>
+    <a class="scroll-float" href="#method" aria-label="Explore the NutriRish method">
+      <span>Explore</span>
+    </a>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="true">
+      <span data-theme-label>Dark</span>
       <i aria-hidden="true"></i>
     </button>
 
@@ -119,10 +127,6 @@
           <span>London / Paris / Global</span>
         </div>
         <div class="hero-side-word" aria-hidden="true">NUTRIRISH</div>
-        <a class="hero-scroll-cue" href="#method" aria-label="Continue to the NutriRish method">
-          <span>Click to scroll</span>
-          <i></i>
-        </a>
       </section>
 
       <section class="ticker" aria-label="Client outcomes">
@@ -365,6 +369,6 @@
       </div>
     </footer>
 
-    <script src="./app.js?v=20260603-10"></script>
+    <script src="./app.js?v=20260603-11"></script>
   </body>
 </html>

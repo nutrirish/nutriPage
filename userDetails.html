@@ -16,10 +16,15 @@
     />
     <script>
       try {
-        if (localStorage.getItem("nutrirish-theme") === "light") document.documentElement.classList.add("theme-light");
-      } catch (error) {}
+        const themeVersion = "20260603-light-default";
+        const savedTheme = localStorage.getItem("nutrirish-theme");
+        const savedVersion = localStorage.getItem("nutrirish-theme-version");
+        if (savedVersion !== themeVersion || savedTheme !== "dark") document.documentElement.classList.add("theme-light");
+      } catch (error) {
+        document.documentElement.classList.add("theme-light");
+      }
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260603-10" />
+    <link rel="stylesheet" href="./styles.css?v=20260603-11" />
   </head>
   <body class="intake-page">
     <div class="grain" aria-hidden="true"></div>
@@ -31,8 +36,11 @@
       <span>Begin enquiry</span>
       <i>NR</i>
     </a>
-    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode" aria-pressed="false">
-      <span data-theme-label>Light</span>
+    <a class="scroll-float" href="#wellnessForm" aria-label="Scroll to private enquiry form">
+      <span>Form</span>
+    </a>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="true">
+      <span data-theme-label>Dark</span>
       <i aria-hidden="true"></i>
     </button>
 
@@ -273,6 +281,6 @@
       <a href="./index.html">Return home</a>
     </footer>
 
-    <script src="./intake.js?v=20260603-10"></script>
+    <script src="./intake.js?v=20260603-11"></script>
   </body>
 </html>

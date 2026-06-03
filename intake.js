@@ -77,15 +77,20 @@ function applyTheme(mode) {
 }
 
 function initThemeToggle() {
-  let savedTheme = "dark";
+  const themeVersion = "20260603-light-default";
+  let savedTheme = "light";
   try {
-    savedTheme = localStorage.getItem("nutrirish-theme") || "dark";
+    const savedVersion = localStorage.getItem("nutrirish-theme-version");
+    savedTheme = savedVersion === themeVersion ? localStorage.getItem("nutrirish-theme") || "light" : "light";
+    localStorage.setItem("nutrirish-theme-version", themeVersion);
+    if (savedVersion !== themeVersion) localStorage.setItem("nutrirish-theme", "light");
   } catch (error) {}
 
   applyTheme(savedTheme);
   themeToggle?.addEventListener("click", () => {
     const nextTheme = document.documentElement.classList.contains("theme-light") ? "dark" : "light";
     try {
+      localStorage.setItem("nutrirish-theme-version", themeVersion);
       localStorage.setItem("nutrirish-theme", nextTheme);
     } catch (error) {}
     applyTheme(nextTheme);

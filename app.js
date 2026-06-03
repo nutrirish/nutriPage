@@ -65,15 +65,20 @@ function applyTheme(mode) {
 }
 
 function initThemeToggle() {
-  let savedTheme = "dark";
+  const themeVersion = "20260603-light-default";
+  let savedTheme = "light";
   try {
-    savedTheme = localStorage.getItem("nutrirish-theme") || "dark";
+    const savedVersion = localStorage.getItem("nutrirish-theme-version");
+    savedTheme = savedVersion === themeVersion ? localStorage.getItem("nutrirish-theme") || "light" : "light";
+    localStorage.setItem("nutrirish-theme-version", themeVersion);
+    if (savedVersion !== themeVersion) localStorage.setItem("nutrirish-theme", "light");
   } catch (error) {}
 
   applyTheme(savedTheme);
   themeToggle?.addEventListener("click", () => {
     const nextTheme = document.documentElement.classList.contains("theme-light") ? "dark" : "light";
     try {
+      localStorage.setItem("nutrirish-theme-version", themeVersion);
       localStorage.setItem("nutrirish-theme", nextTheme);
     } catch (error) {}
     applyTheme(nextTheme);
@@ -282,10 +287,19 @@ function updateGallery(scroll) {
   track.style.setProperty("--gallery-x", `${-galleryTravel * progress}px`);
 
   galleryCards.forEach((card, index) => {
-    const wave = Math.sin(progress * Math.PI * 2 + index * 0.72);
-    card.style.setProperty("--card-y", `${wave * (touchDevice ? 6 : 16)}px`);
-    card.style.setProperty("--image-scale", `${1.025 + Math.abs(wave) * (touchDevice ? 0.012 : 0.035)}`);
-    card.style.setProperty("--caption-x", `${wave * (touchDevice ? 0 : 10)}px`);
+    const rect = card.getBoundingClientRect();
+    const centerOffset = clamp((rect.top + rect.height / 2 - viewportHeight / 2) / viewportHeight, -1, 1);
+    const wave = Math.sin(progress * Math.PI * 2 + index * 0.78);
+    const y = centerOffset * (touchDevice ? 9 : 18) + wave * (touchDevice ? 5 : 12);
+    const tilt = (wave - centerOffset) * (touchDevice ? 1.1 : 2.2);
+    const visibility = clamp((viewportHeight - rect.top) / (viewportHeight + rect.height), 0, 1);
+
+    card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
+    card.style.setProperty("--gallery-tilt", `${tilt.toFixed(2)}deg`);
+    card.style.setProperty("--gallery-card-scale", `${(0.965 + visibility * 0.035).toFixed(3)}`);
+    card.style.setProperty("--gallery-card-opacity", `${(0.78 + visibility * 0.22).toFixed(3)}`);
+    card.style.setProperty("--image-scale", `${(1.015 + Math.abs(wave) * (touchDevice ? 0.018 : 0.035)).toFixed(3)}`);
+    card.style.setProperty("--caption-x", `${(wave * (touchDevice ? 5 : 10)).toFixed(2)}px`);
   });
 }
 

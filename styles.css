@@ -756,29 +756,40 @@ body.cursor-active .cursor-ring {
   transition: border-color 220ms ease, background 220ms ease, transform 220ms ease;
 }
 
-.theme-toggle {
+.theme-toggle,
+.scroll-float {
   position: fixed;
   left: clamp(14px, 2vw, 28px);
-  bottom: clamp(14px, 2vw, 28px);
   z-index: 340;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 50px;
-  padding: 7px 8px 7px 14px;
   border: 1px solid rgba(208, 180, 122, 0.5);
   color: var(--ink);
   background: rgba(7, 9, 8, 0.82);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(18px);
-  cursor: pointer;
   font: 700 0.62rem/1 "Space Mono", monospace;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: border-color 220ms ease, background 220ms ease, transform 220ms ease;
 }
 
-.theme-toggle:hover {
+.theme-toggle {
+  bottom: clamp(14px, 2vw, 28px);
+  gap: 10px;
+  min-height: 50px;
+  padding: 7px 8px 7px 14px;
+  cursor: pointer;
+}
+
+.scroll-float {
+  bottom: calc(clamp(14px, 2vw, 28px) + 62px);
+  min-height: 38px;
+  padding: 0 13px;
+}
+
+.theme-toggle:hover,
+.scroll-float:hover {
   border-color: var(--gold);
   transform: translateY(-3px);
 }
@@ -802,6 +813,7 @@ body.cursor-active .cursor-ring {
 }
 
 .theme-light .theme-toggle,
+.theme-light .scroll-float,
 .theme-light .private-float {
   color: #15130f;
   background: rgba(255, 250, 240, 0.8);
@@ -1239,46 +1251,6 @@ p {
   writing-mode: vertical-rl;
 }
 
-.hero-scroll-cue {
-  position: absolute;
-  top: calc(100vh - 112px);
-  left: 50%;
-  z-index: 4;
-  display: grid;
-  justify-items: center;
-  gap: 13px;
-  padding: 12px 18px 10px;
-  border: 1px solid rgba(208, 180, 122, 0.28);
-  color: rgba(243, 238, 229, 0.86);
-  background: rgba(7, 9, 8, 0.38);
-  backdrop-filter: blur(14px);
-  font-family: "Space Mono", monospace;
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  transform: translateX(-50%);
-  transition: border-color 220ms ease, background 220ms ease, transform 220ms ease;
-}
-
-.hero-scroll-cue:hover {
-  border-color: rgba(208, 180, 122, 0.62);
-  background: rgba(12, 15, 13, 0.66);
-  transform: translateX(-50%) translateY(-3px);
-}
-
-.hero-scroll-cue i {
-  width: 2px;
-  height: 54px;
-  background: linear-gradient(180deg, #f8e5af, var(--gold), transparent);
-  animation: scroll-cue 1.8s ease-in-out infinite;
-}
-
-@keyframes scroll-cue {
-  0%, 100% { opacity: 0.4; transform: scaleY(0.48); transform-origin: top; }
-  50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
-}
-
 .ticker {
   overflow: hidden;
   border-block: 1px solid var(--line);
@@ -1348,7 +1320,7 @@ p {
 .section-pad {
   position: relative;
   overflow: clip;
-  padding: clamp(82px, 14vw, 180px) clamp(18px, 6vw, 82px);
+  padding: clamp(58px, 8vw, 118px) clamp(18px, 6vw, 82px);
 }
 
 .section-pad > :not(.produce-cluster),
@@ -1835,7 +1807,7 @@ p {
   position: relative;
   overflow: hidden;
   min-height: auto;
-  padding: clamp(74px, 7vw, 108px) 0 clamp(70px, 8vw, 118px) clamp(18px, 6vw, 82px);
+  padding: clamp(56px, 6vw, 84px) 0 clamp(44px, 5vw, 72px) clamp(18px, 6vw, 82px);
 }
 
 .gallery-copy {
@@ -1862,7 +1834,7 @@ p {
 .gallery-track {
   display: flex;
   gap: 22px;
-  margin-top: clamp(28px, 4vw, 52px);
+  margin-top: clamp(22px, 3vw, 40px);
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0 clamp(18px, 6vw, 82px) 12px 0;
@@ -1884,8 +1856,10 @@ p {
   background: #172015;
   box-shadow: 0 24px 60px rgba(31, 50, 25, 0.22);
   scroll-snap-align: start;
-  translate: 0 var(--card-y, 0px);
-  will-change: translate;
+  opacity: var(--gallery-card-opacity, 0.92);
+  transform: translate3d(0, var(--card-y, 0px), 0) rotate(var(--gallery-tilt, 0deg)) scale(var(--gallery-card-scale, 1));
+  transform-origin: 50% 70%;
+  will-change: transform, opacity;
 }
 
 .gallery-track figcaption {
@@ -1901,7 +1875,9 @@ p {
     radial-gradient(circle at 50% 42%, rgba(143, 184, 110, 0.08), transparent 60%),
     #f3eddc;
   filter: contrast(1.04) saturate(0.93);
-  transform: none;
+  transform: scale(var(--image-scale, 1));
+  transition: transform 180ms linear;
+  will-change: transform;
 }
 
 .gallery-track figure:nth-child(1) img,
@@ -3277,7 +3253,7 @@ figcaption {
   }
 
   .section-pad {
-    padding-inline: 18px;
+    padding: clamp(48px, 12vw, 72px) 18px;
   }
 
   h1 {
@@ -3382,13 +3358,17 @@ figcaption {
     font-size: 0.55rem;
   }
 
+  .scroll-float {
+    left: 12px;
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 52px);
+    min-height: 34px;
+    padding: 0 11px;
+    font-size: 0.52rem;
+  }
+
   .theme-toggle i {
     width: 30px;
     height: 30px;
-  }
-
-  .hero-scroll-cue {
-    display: none;
   }
 
   .stats {
@@ -3403,7 +3383,7 @@ figcaption {
     position: relative;
     overflow: visible;
     height: auto;
-    padding: 72px 0 56px 18px;
+    padding: 48px 0 34px 18px;
   }
 
   .horizontal-gallery {
@@ -3420,7 +3400,7 @@ figcaption {
 
   .gallery-track {
     gap: 14px;
-    margin-top: 22px;
+    margin-top: 18px;
     padding: 0 18px 18px 0;
     overflow-x: auto;
     transform: none !important;
@@ -3439,8 +3419,8 @@ figcaption {
   .video-grid {
     min-height: auto;
     overflow: hidden;
-    padding-top: 74px;
-    padding-bottom: 74px;
+    padding-top: 56px;
+    padding-bottom: 58px;
   }
 
   .video-grid .section-kicker,

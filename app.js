@@ -11,6 +11,7 @@ const loaderStatus = document.querySelector("[data-loader-status]");
 const loaderRing = document.querySelector("[data-loader-ring]");
 const progressBar = document.querySelector(".progress span");
 const gallery = document.querySelector(".horizontal-gallery");
+const galleryViewport = document.querySelector(".gallery-viewport");
 const track = document.querySelector("[data-track]");
 const galleryCards = document.querySelectorAll(".gallery-track figure");
 const videoGrid = document.querySelector(".video-grid");
@@ -26,6 +27,7 @@ const lightLeak = document.querySelector(".light-leak");
 const scrollVignette = document.querySelector(".scroll-vignette");
 const privateSection = document.querySelector(".private");
 const privateBackdrop = document.querySelector(".private-bg");
+const privateContent = document.querySelector(".private-content");
 const driftTexts = [...document.querySelectorAll("[data-drift]")].map((element) => ({
   element,
   top: 0,
@@ -247,9 +249,14 @@ document.addEventListener("visibilitychange", () => {
 
 function updateMeasurements() {
   viewportHeight = window.innerHeight;
-  maxScroll = Math.max(1, root.scrollHeight - viewportHeight);
-  galleryTravel = track ? Math.max(0, track.scrollWidth - window.innerWidth + 82) : 0;
+  galleryTravel = track && galleryViewport ? Math.max(0, track.scrollWidth - galleryViewport.clientWidth) : 0;
   mobileFilmTravel = filmGrid ? Math.max(0, filmGrid.scrollWidth - window.innerWidth + 36) : 0;
+  if (gallery) {
+    const scrollDistance = galleryTravel * (touchDevice ? 0.62 : 0.58);
+    const galleryScrollHeight = viewportHeight + scrollDistance;
+    gallery.style.setProperty("--gallery-scroll-height", `${Math.max(viewportHeight * 1.08, galleryScrollHeight)}px`);
+  }
+  maxScroll = Math.max(1, root.scrollHeight - viewportHeight);
 
   cinemas.forEach((cinema) => {
     cinema.top = cinema.section.offsetTop;
@@ -284,7 +291,7 @@ function updateGallery(scroll) {
   const top = gallery.offsetTop;
   const scrollable = Math.max(1, gallery.offsetHeight - viewportHeight);
   const progress = clamp((scroll - top) / scrollable, 0, 1);
-  const animatedTravel = touchDevice ? 0 : galleryTravel;
+  const animatedTravel = galleryTravel;
   track.style.setProperty("--gallery-x", `${-animatedTravel * progress}px`);
 
   galleryCards.forEach((card, index) => {
@@ -294,7 +301,7 @@ function updateGallery(scroll) {
     card.style.setProperty("--gallery-card-scale", "1");
     card.style.setProperty("--gallery-card-opacity", "1");
     card.style.setProperty("--image-scale", "1");
-    card.style.setProperty("--caption-x", `${(wave * (touchDevice ? 0 : 8)).toFixed(2)}px`);
+    card.style.setProperty("--caption-x", `${(wave * (touchDevice ? 0 : 4)).toFixed(2)}px`);
   });
 }
 
@@ -409,6 +416,7 @@ function updateSectionMotion(scroll) {
     const progress = getViewportProgress(privateSection, scroll);
     privateBackdrop.style.setProperty("--private-y", `${progress * 30}px`);
     privateBackdrop.style.setProperty("--private-scale", `${1.055 + Math.abs(progress) * 0.025}`);
+    privateContent?.style.setProperty("--private-copy-y", `${progress * (touchDevice ? -16 : -34)}px`);
   }
 }
 

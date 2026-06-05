@@ -284,22 +284,17 @@ function updateGallery(scroll) {
   const top = gallery.offsetTop;
   const scrollable = Math.max(1, gallery.offsetHeight - viewportHeight);
   const progress = clamp((scroll - top) / scrollable, 0, 1);
-  track.style.setProperty("--gallery-x", `${-galleryTravel * progress}px`);
+  const animatedTravel = touchDevice ? 0 : galleryTravel;
+  track.style.setProperty("--gallery-x", `${-animatedTravel * progress}px`);
 
   galleryCards.forEach((card, index) => {
-    const rect = card.getBoundingClientRect();
-    const centerOffset = clamp((rect.top + rect.height / 2 - viewportHeight / 2) / viewportHeight, -1, 1);
     const wave = Math.sin(progress * Math.PI * 2 + index * 0.78);
-    const y = centerOffset * (touchDevice ? 18 : 22) + wave * (touchDevice ? 12 : 16);
-    const tilt = (wave - centerOffset) * (touchDevice ? 3.1 : 2.8);
-    const visibility = clamp((viewportHeight - rect.top) / (viewportHeight + rect.height), 0, 1);
 
-    card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
-    card.style.setProperty("--gallery-tilt", `${tilt.toFixed(2)}deg`);
-    card.style.setProperty("--gallery-card-scale", `${(0.945 + visibility * 0.055).toFixed(3)}`);
-    card.style.setProperty("--gallery-card-opacity", `${(0.66 + visibility * 0.34).toFixed(3)}`);
-    card.style.setProperty("--image-scale", `${(1.02 + Math.abs(wave) * (touchDevice ? 0.04 : 0.04)).toFixed(3)}`);
-    card.style.setProperty("--caption-x", `${(wave * (touchDevice ? 14 : 12)).toFixed(2)}px`);
+    card.style.setProperty("--card-y", "0px");
+    card.style.setProperty("--gallery-card-scale", "1");
+    card.style.setProperty("--gallery-card-opacity", "1");
+    card.style.setProperty("--image-scale", "1");
+    card.style.setProperty("--caption-x", `${(wave * (touchDevice ? 0 : 8)).toFixed(2)}px`);
   });
 }
 
